@@ -1,6 +1,6 @@
 #include <stdio.h>
 #include <stdio.h>
-#include <malloc.h>
+#include <stdlib.h>
 #include <math.h>
 
 #define DX 0.1
@@ -28,34 +28,31 @@ int main(void) {
 	 */
 	kdvExact(x, 0., 16., 0);
 
-	if (x != NULL) {
-		t = 0.;
-		j = 0;
-		while(t < 2) {
-			rk4(x, xnew, DT, DX);
-			for(i = 0; i < N; i++) {
-				x[i] = xnew[i];
-			}
-			
-			j++;
+	t = 0.;
+	j = 0;
+	while(t < 2) {
 
-			if((j % 500) == 0) {
-		        for(i = 0; i < N; i++) {
-			        printf("%e %e\n", -L + i * DX, x[i]);
-		        }
-				printf("\n\n");
-			}
-			
-			t += DT;
+		if((j % 500) == 0) {
+	        for(i = 0; i < N; i++) {
+		        printf("%e %e\n", -L + i * DX, x[i]);
+	        }
+			printf("\n\n");
 		}
+
+		rk4(x, xnew, DT, DX);
+
 		for(i = 0; i < N; i++) {
-			printf("%d %e\n", i, x[i]);
+			x[i] = xnew[i];
 		}
+		
+		j++;
+		t += DT;
 	}
 	
 	free(x);
 	free(xnew);
-  
+
+	return 0;
 }
 
 void kdv(double x[], double xnew[], double dt, double dx) {
@@ -136,7 +133,7 @@ void rk4(double x[], double xnew[], double dt, double dx) {
 	for(i = 0; i < N; i++) { 
 		xnew[i] = x[i] + k3[i] * dt;
 	}
-	kdv(xnew, k3, dt, dx);
+	kdv(xnew, k4, dt, dx);
 	for(i = 0; i < N; i++) {
 		xnew[i] = x[i] + 1./6. * (k1[i] + 2. * k2[i] + 2. * k3[i] + k4[i]) * dt;
 	}
